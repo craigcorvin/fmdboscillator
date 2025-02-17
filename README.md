@@ -1,0 +1,2 @@
+<h2>Frequency Modulated Delay Buffer Oscillator</h2>
+A sine wave of a frequency is added to a delay buffer, and another sine wave at a frequency modulates a range of locations of the delay buffer, at an offset point, and that is returned as output.
