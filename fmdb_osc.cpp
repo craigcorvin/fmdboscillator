@@ -38,7 +38,7 @@ void FmdbOsc::Init(float sample_rate)
 {
     sample_rate_ = sample_rate;
     buffer_length_ = sample_rate_;
-	// resize the length of the vector that stores input 
+    // resize the length of the vector that stores input 
     delay_buffer_.resize(buffer_length_);
     delay_buffer_range_ = buffer_length_ / 4;
     delay_buffer_offset_ = 1;
@@ -91,19 +91,19 @@ float FmdbOsc::Process()
     // input to add to delay buffer, which is a sine wave at center_frequency_
     float input = sin(theta_);
 
-	// coefficient value between 1 and -1 oscillating at delay_buffer_modulation_frequency_ 
+    // coefficient value between 1 and -1 oscillating at delay_buffer_modulation_frequency_ 
     delay_buffer_coeffcient_ = sin(beta_);
 
-	// the current offset value within the width delay_buffer_range_ at frequency of delay_buffer_coeffcient_
+    // the current offset value within the width delay_buffer_range_ at frequency of delay_buffer_coeffcient_
     offset_value_ = (delay_buffer_coeffcient_ * delay_buffer_range_) + delay_buffer_offset_;
 
-	// calculate the numeric location within the delay_buffer_
+    // calculate the numeric location within the delay_buffer_
     current_pointer_ = (delay_read_pointer_ - offset_value_  + delay_buffer_.size()) % delay_buffer_.size();
 
-	// get value from delay_buffer_
+    // get value from delay_buffer_
     float delay_buffer_value = delay_buffer_[current_pointer_];
 
-	// advance the read pointer
+    // advance the read pointer
     delay_read_pointer_++;
     if (delay_read_pointer_ >= delay_buffer_.size()) 
     {
@@ -112,7 +112,7 @@ float FmdbOsc::Process()
 
     float output = delay_buffer_value;
 
-	// add center frequency to audio output
+    // add center frequency to audio output
     if (include_center_frequency_)
     {
         output += input;
