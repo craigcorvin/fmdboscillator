@@ -52,13 +52,14 @@ void FmdbOsc::Init(float sample_rate)
     theta_ = 0.0f;
     beta_ = 0.0f;
     sync_ = true;
+    use_input_ = false;
     include_center_frequency_ = false;
 }
 
 /*
 @param return output 
 */
-float FmdbOsc::Process()
+float FmdbOsc::Process(float in)
 {
 
     // sine wave to add into input/delay buffer
@@ -91,11 +92,15 @@ float FmdbOsc::Process()
     // input to add to delay buffer, which is a sine wave at center_frequency_
     float input = sin(theta_);
 
-    // coefficient value between 1 and -1 oscillating at delay_buffer_modulation_frequency_ 
+    if (use_input_) {
+        input = in;
+    }
+
+	// coefficient value between 1 and -1 oscillating at delay_buffer_modulation_frequency_ 
     delay_buffer_coeffcient_ = sin(beta_);
 
-    // the current offset value within the width delay_buffer_range_ at frequency of delay_buffer_coeffcient_
-    offset_value_ = (delay_buffer_coeffcient_ * delay_buffer_range_) + delay_buffer_offset_;
+    // new version
+    offset_value_ = ((delay_buffer_range_ * 0.5f) * delay_buffer_coeffcient_) + (delay_buffer_range_ * 0.5f) + delay_buffer_offset_;
 
     // calculate the numeric location within the delay_buffer_
     current_pointer_ = (delay_read_pointer_ - offset_value_  + delay_buffer_.size()) % delay_buffer_.size();
@@ -151,9 +156,15 @@ void FmdbOsc::SetInputBufferModulationRange(float delay_buffer_modulation_range)
         delay_buffer_modulation_range = 1.0f;
     }
 
+    float range = delay_buffer_modulation_range * buffer_length_;
+
+    if (range == 0.0f) {
+        range = 1.0f;
+    }
+
     // expecting a value between 0.0f and 1.0f
     // delay_buffer_modulation_range * buffer_length = range of values that the buffer will be modulated through
-    delay_buffer_range_ = delay_buffer_modulation_range * buffer_length_;
+    delay_buffer_range_ = range;
 
 }
 
@@ -169,8 +180,14 @@ void FmdbOsc::SetInputBufferModulationOffset(float delay_buffer_modulation_offse
         delay_buffer_modulation_offset = 1.0f;
     }
 
+    float offset = delay_buffer_modulation_offset * buffer_length_;
+
+    if (offset == 0.0f) {
+        offset = 1.0f;
+    }
+
     // center point in the range that the delay_buffer_range_ modulate around
-    delay_buffer_offset_ = delay_buffer_modulation_offset * buffer_length_;
+    delay_buffer_offset_ = offset;
 
 }
 
@@ -185,3 +202,10 @@ void FmdbOsc::SetIncludeCenterFrequency(bool include_center_frequency)
     include_center_frequency_ = include_center_frequency;
 }
 
+void FmdbOsc::SetInputIntoProcess(bool use_input) {
+    use_input_ = use_input;
+}
+
+bool FmdbOsc::GetInputIntoProcess() {
+    return use_input_;
+}

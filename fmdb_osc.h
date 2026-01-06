@@ -42,7 +42,7 @@ class FmdbOsc
         /*
         @param return output
         */
-        float Process();
+        float Process(float in);
 
         /*
         set the frequency in HZ of the sine wave that is added to the input buffer
@@ -81,6 +81,18 @@ class FmdbOsc
         */
         void SetIncludeCenterFrequency(bool include_center_frequency);
 
+        /*
+        use input into process instead of oscillator
+        @param bool in
+        */
+        void SetInputIntoProcess(bool use_input);
+
+        /*
+        get value of in_, to check if use input into process has been set to true
+        @return in_
+        */
+        bool GetInputIntoProcess();
+        
 
     private:
 
@@ -114,6 +126,8 @@ class FmdbOsc
         int offset_value_;
         // resets the period of the beta_ oscillator when theta_ finishes a cycle
         bool sync_;
+        // use input into process instead of oscillator
+        bool use_input_;
         // include the center frequency in the output from Process()
         bool include_center_frequency_;
 
